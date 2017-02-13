@@ -13,6 +13,7 @@ var init = require('./app/helppers/initlazied');
 var index = require('./routes/index');
 var apis = require('./routes/app');
 mongoose.Promise = global.Promise;
+//ssss
 init();
 var app = express();
 
