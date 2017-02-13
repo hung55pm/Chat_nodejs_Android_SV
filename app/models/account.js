@@ -7,7 +7,7 @@ var bcrypt = require('bcrypt-nodejs');
 var Schema = mongoose.Schema;
 
 var accountSchema = new Schema({
-    employee_code: {
+    user_id: {
         type: String,
         required: true,
         unique: true
@@ -17,7 +17,7 @@ var accountSchema = new Schema({
     birthday: Date,
     role: Number,
     address: String,
-    phone: String,
+    email: String,
     access_token: String,
 
 });

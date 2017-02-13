@@ -12,13 +12,13 @@ mongoose.connect('mongodb://localhost/chat-nodejs-mobile');
 module.exports = function () {
 
     Account.findOne({
-        employee_code: 'ADMIN'
+        user_id: '01675647422'
     }, function (err, acc) {
         if (!err && !acc) {
             var admin = new Account({
-                employee_code: 'ADMIN',
+                user_id: '01675647422',
             });
-            admin.password = admin.generateHash('admin');
+            admin.password = admin.generateHash('hung123');
             admin.save();
 
         }

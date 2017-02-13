@@ -6,18 +6,18 @@ var fs = require('fs');
 var Account = require('../models/account');
 var UUID = require('node-uuid');
 var mongoose = require('mongoose');
-var respone=require('../helpper/respones');
+var respone=require('../helppers/respones');
 
 
 exports.login = function (req, res) {
     console.log("aaaaaa"+JSON.stringify(req.body));
-    var employeeCode = req.body.email;
+    var userid = req.body.phone;
     var password = req.body.password;
     Account.findOne({
         $or: [{
-            'employee_code': employeeCode.toUpperCase()
+            'user_id': userid.toUpperCase()
         }, {
-            'employee_code': employeeCode
+            'user_id': userid
         }]
     }, function (err, acc) {
         if (err) {
@@ -39,12 +39,12 @@ exports.login = function (req, res) {
     });
 }
 exports.register = function (req, res) {
-    if (!req.body.email || !req.body.name || !req.body.address
-        || !req.body.phone || !req.body.password) {
+    if (!req.body.phone || !req.body.name || !req.body.address
+        || !req.body.email || !req.body.password) {
         res.json({code: 400, message: 'one or more parameters is missing'});
     } else {
         var newAccount = new Account({
-            employee_code: req.body.email.toLowerCase(),
+            user_id: req.body.phone.toLowerCase(),
             name: req.body.name,
             birthday: req.body.birthday,
             address: req.body.address,
@@ -58,10 +58,10 @@ exports.register = function (req, res) {
             //check account exist
             function (done) {
                 Account.findOne({
-                    employee_code: req.body.email.toLowerCase()
+                    user_id: req.body.phone.toLowerCase()
                 }, function (err, acc) {
                     if (err) done(err);
-                    else if (acc) done('email already exist');
+                    else if (acc) done('phone number already exist');
                     else done(null);
                 });
             },
@@ -86,7 +86,7 @@ exports.changepassword =function (req,res) {
     }else {
         var newAccount = new Account();
         Account.findOne({
-            employee_code: req.body.phone
+            user_id: req.body.phone
         }, function (err, acc) {
             if (err) {
                 res.json({
