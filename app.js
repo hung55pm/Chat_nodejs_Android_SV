@@ -15,7 +15,7 @@ var apis = require('./routes/app');
 mongoose.Promise = global.Promise;
 init();
 var app = express();
-
+//aaa
 var io =require('./app/connect/socketioconnect');
 io.socketlisten();
 // view engine setup
