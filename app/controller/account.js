@@ -30,7 +30,6 @@ exports.login = function (req, res) {
             respone.res_error(500,'The password is invalid',true,res);
         } else {
             var tmp=({
-                pemission: acc.role,
                 access_token: acc.access_token
             });
             respone.res_success(200,'success',false,tmp,res);
@@ -39,17 +38,14 @@ exports.login = function (req, res) {
     });
 }
 exports.register = function (req, res) {
-    if (!req.body.phone || !req.body.name || !req.body.address
+    if (!req.body.phone || !req.body.name
         || !req.body.email || !req.body.password) {
         res.json({code: 400, message: 'one or more parameters is missing'});
     } else {
         var newAccount = new Account({
             user_id: req.body.phone.toLowerCase(),
             name: req.body.name,
-            birthday: req.body.birthday,
-            address: req.body.address,
             phone: req.body.phone,
-            role:2,
             email: req.body.email
         });
         newAccount.password = newAccount.generateHash(req.body.password);
