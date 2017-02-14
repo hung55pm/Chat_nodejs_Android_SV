@@ -16,7 +16,7 @@ mongoose.Promise = global.Promise;
 init();
 var app = express();
 
-var io = require('./app/connect/socketioconnect');
+var io =require('./app/connect/socketioconnect');
 io.socketlisten();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
