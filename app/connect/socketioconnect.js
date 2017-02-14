@@ -10,7 +10,9 @@ http.listen(4000, function(){
 });
 exports.socketlisten=function () {
     io.on('connection', function(socket){
-        console.log('a user connected');
-
+        console.log('a user connected ');
+        socket.on('disconnect', function(){
+            console.log('user disconnected');
+        });
     });
 }
