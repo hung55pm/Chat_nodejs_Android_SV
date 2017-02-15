@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Acount =require('../app/controller/account');
+var Message=require('../app/controller/message');
+
 /* GET users listing. */
 router.get('/', function (req, res, next) {
     res.send('');
@@ -25,4 +27,6 @@ function isValidToken(req, res, next) {
 router.post('/login',Acount.login);
 router.post('/register', Acount.register);
 router.post('/logout',isValidToken, Acount.logout);
+router.post('/chat',isValidToken,Message.socketlisten);
+
 module.exports = router;
