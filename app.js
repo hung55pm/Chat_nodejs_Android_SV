@@ -12,13 +12,15 @@ var mongoose = require('mongoose');
 var init = require('./app/helppers/initlazied');
 var index = require('./routes/index');
 var apis = require('./routes/app');
+var message=require('./app/controller/message');
+message.socketlisten();
 mongoose.Promise = global.Promise;
 init();
 var app = express();
 
-var io =require('./app/connect/socketioconnect');
-io.socketlisten();
-// view engine setup
+
+
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
