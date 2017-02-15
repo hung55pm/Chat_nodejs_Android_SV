@@ -17,3 +17,10 @@ exports.res_success=function (codeerro,mes,checkerr,result,res) {
         result:result
     });
 }
+exports.res_successnoresult=function (codeerro,mes,checkerr,res) {
+    res.json({
+        code: codeerro,
+        err:checkerr,
+        message: mes,
+    });
+}

@@ -4,12 +4,14 @@
 
 var http=require('../../configs/socketio_configs');
 var io = require('socket.io')(http.httplistens());
-exports.socketlisten=function () {
+exports.socketlisten=function (req,res) {
     io.on('connection', function(socket){
         console.log('a user connected ');
 
         socket.on('new message', function(msg){
             console.log('message: ' + msg);
+            var tmp= JSON.parse(msg);
+            io.emit('new message', tmp);
         });
 
         socket.on('disconnect', function(){
