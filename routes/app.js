@@ -32,4 +32,5 @@ router.post('/login',Acount.login);
 router.post('/register', Acount.register);
 router.post('/logout',isValidToken, Acount.logout);
 router.post('/friend-request',isValidToken,Friend.sendfriendrequest);
+router.post('/friend-reply',isValidToken,Friend.replyfriendrequest);
 module.exports = router;
