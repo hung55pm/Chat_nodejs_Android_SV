@@ -6,11 +6,11 @@ var fs = require('fs');
 var Account = require('../models/account');
 var UUID = require('node-uuid');
 var mongoose = require('mongoose');
-var respone=require('../helppers/respones');
+var respone = require('../helppers/respones');
 
 
 exports.login = function (req, res) {
-    console.log("aaaaaa"+JSON.stringify(req.body));
+    console.log("aaaaaa" + JSON.stringify(req.body));
     var userid = req.body.phone;
     var password = req.body.password;
     Account.findOne({
@@ -21,18 +21,18 @@ exports.login = function (req, res) {
         }]
     }, function (err, acc) {
         if (err) {
-            respone.res_error(500,'system error',true,res);
+            respone.res_error(500, 'system error', true, res);
         }
         else if (!acc) {
-            respone.res_error(500,'Account does not exist ',true,res);
+            respone.res_error(500, 'Account does not exist ', true, res);
         }
         else if (!acc.validPassword(req.body.password)) {
-            respone.res_error(500,'The password is invalid',true,res);
+            respone.res_error(500, 'The password is invalid', true, res);
         } else {
-            var tmp=({
+            var tmp = ({
                 access_token: acc.access_token
             });
-            respone.res_success(200,'success',false,tmp,res);
+            respone.res_success(200, 'success', false, tmp, res);
 
         }
     });
@@ -69,17 +69,17 @@ exports.register = function (req, res) {
             },
         ], function (err) {
             if (err) {
-                res.json({code:500, message: err});
+                res.json({code: 500, message: err});
             } else {
-                res.json({code: 200, message:'success'});
+                res.json({code: 200, message: 'success'});
             }
         });
     }
 }
-exports.changepassword =function (req,res) {
-    if(!req.body.phone || !req.body.newpassword || !req.body.oldpassword ){
+exports.changepassword = function (req, res) {
+    if (!req.body.phone || !req.body.newpassword || !req.body.oldpassword) {
         res.json({code: 400, message: 'one or more parameters is missing'});
-    }else {
+    } else {
         var newAccount = new Account();
         Account.findOne({
             user_id: req.body.phone
@@ -116,19 +116,49 @@ exports.changepassword =function (req,res) {
 function getAccessToken(req) {
     return req.get('Authorization').substring(13);
 }
-exports.logout = function (req,res) {
-        var accessToken = getAccessToken(req);
-    console.log("aaaaa"+accessToken);
-        Account.findOneAndUpdate({
-            access_token: accessToken
-        }, {
-            access_token: UUID.v4()
-        }, function (err, acc) {
-            if (err || !acc) {
-                respone.res_error(400,"logout fail",true,res);
+exports.logout = function (req, res) {
+    var accessToken = getAccessToken(req);
+    console.log("aaaaa" + accessToken);
+    Account.findOneAndUpdate({
+        access_token: accessToken
+    }, {
+        access_token: UUID.v4()
+    }, function (err, acc) {
+        if (err || !acc) {
+            respone.res_error(400, "logout fail", true, res);
+        }
+        respone.res_success(200, "logout success", false, "", res);
+    });
+
+
+}
+
+
+exports.searchfriend = function (req, res) {
+    var user_id = req.body.phone;
+    var tmp=[];
+    if (user_id==req.user.user_id) {
+        respone.res_success(200, "success", false, tmp, res)
+    } else {
+
+        Account.findOne({user_id: user_id}, function (err, acc) {
+            if (err) {
+                respone.res_error(400, "system err", true, res);
+            } else {
+                if (!acc) {
+                    respone.res_success(200, "success", false, tmp, res)
+                } else {
+                    var result = {
+                        user_id: acc.user_id,
+                        name: acc.name,
+                    }
+                    tmp.push(result);
+                    respone.res_success(200, "success", false, tmp, res)
+                }
+
+
             }
-            respone.res_success(200,"logout success",false,"",res);
+
         });
-
-
+    }
 }

@@ -15,7 +15,6 @@ var accountSchema = new Schema({
     password: String,
     name: String,
     birthday: Date,
-    role: Number,
     address: String,
     email: String,
     access_token: String,
