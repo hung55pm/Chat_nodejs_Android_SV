@@ -6,6 +6,7 @@ var fs = require('fs');
 var Account = require('../models/account');
 var UUID = require('node-uuid');
 var mongoose = require('mongoose');
+var Friends=require('../models/friend')
 var respone = require('../helppers/respones');
 
 
@@ -132,33 +133,70 @@ exports.logout = function (req, res) {
 
 
 }
-
-
 exports.searchfriend = function (req, res) {
-    var user_id = req.body.phone;
+    var friend_id = req.body.phone;
     var tmp=[];
-    if (user_id==req.user.user_id) {
+    var tmpfr=false;
+    if (friend_id==req.user.user_id) {
         respone.res_success(200, "success", false, tmp, res)
     } else {
-
-        Account.findOne({user_id: user_id}, function (err, acc) {
-            if (err) {
-                respone.res_error(400, "system err", true, res);
-            } else {
-                if (!acc) {
-                    respone.res_success(200, "success", false, tmp, res)
+        async.waterfall([function (done) {
+            Account.findOne({user_id: friend_id}, function (err, acc) {
+                if (err) {
+                    done(err);
+                    //respone.res_error(400, "system err", true, res);
                 } else {
-                    var result = {
-                        user_id: acc.user_id,
-                        name: acc.name,
+                    if (!acc) {
+                        done(null);
+                        //respone.res_success(200, "success", false, tmp, res)
+                    } else {
+                        var result = {
+                            user_id: acc.user_id,
+                            name: acc.name,
+                        }
+                        tmp.push(result);
+                        done(null);
+                       // respone.res_success(200, "success", false, tmp, res)
                     }
-                    tmp.push(result);
-                    respone.res_success(200, "success", false, tmp, res)
+
+
                 }
 
-
+            });
+        },function (done) {
+            Friends.findOne({user_id: req.user.user_id},function (err, acc) {
+                if(err){
+                    done(err);
+                }else if(!acc){
+                    done(null)
+                }else {
+                    if(_contain(acc.list,friend_id)){
+                        tmpfr=true
+                    }else {
+                        tmpfr=false;
+                    }
+                    done(null)
+                }
+            })
+        }],function (err) {
+            if(err){
+                respone.res_error(400, "system err", true, res);
+            }else {
+                if(tmpfr){
+                    respone.res_success(300, "success", false, tmp, res)
+                }else {
+                    respone.res_success(200, "success", false, tmp, res)
+                }
             }
+        })
 
-        });
     }
+}
+function _contain(arr, check_friend_id) {
+
+    for (var i in arr) {
+        if (arr[i].friend_id == check_friend_id)
+            return true;
+    }
+    return false;
 }

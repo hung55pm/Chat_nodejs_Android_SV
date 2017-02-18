@@ -15,14 +15,14 @@ function getAccessToken(req) {
 }
 function isValidToken(req, res, next) {
     var accessToken = getAccessToken(req);
-    console.log(accessToken)
+    //console.log(accessToken)
         mAcount.findOne({
         access_token: accessToken
     }, function (err, acc) {
         if (err || !acc) {
             respone.res_error(400,'invalid access token',true,res);
         } else {
-            console.log(acc);
+            //console.log(acc);
             req.user = acc;
             return next();
         }

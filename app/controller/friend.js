@@ -7,7 +7,7 @@ var Friend = require('../models/friend');
 var respone = require('../helppers/respones');
 var async = require('async');
 exports.sendfriendrequest = function (req, res) {
-    console.log(req.body.friend_id);
+    console.log(req.body.friend_id+"   "+req.user.user_id);
     var friend_id = req.body.friend_id;
     async.waterfall([
         function (done) {
