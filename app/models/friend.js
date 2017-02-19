@@ -10,6 +10,6 @@ var friendsSchema = new Schema({
         required: true,
         unique: true
     },
-    list: [{friend_id: String,status:Number}]
+    list: [{friend_id: String,status:Number, name: String}]
 });
 module.exports = mongoose.model('Friends', friendsSchema);

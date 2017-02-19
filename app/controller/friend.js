@@ -7,7 +7,7 @@ var Friend = require('../models/friend');
 var respone = require('../helppers/respones');
 var async = require('async');
 exports.sendfriendrequest = function (req, res) {
-    console.log(req.body.friend_id+"   "+req.user.user_id);
+    console.log(req.body.friend_id + "   " + req.user.user_id);
     var friend_id = req.body.friend_id;
     async.waterfall([
         function (done) {
@@ -22,6 +22,7 @@ exports.sendfriendrequest = function (req, res) {
                     });
                     var tmp = ({
                         friend_id: friend_id,
+                        name: req.body.name,
                         status: 0,
                     });
                     newfriendrq.list.push(tmp);
@@ -36,6 +37,7 @@ exports.sendfriendrequest = function (req, res) {
                     if (!_contain(result.list, friend_id)) {
                         var tmp = ({
                             friend_id: friend_id,
+                            name: req.body.name,
                             status: 0,
                         });
                         result.list.push(tmp);
@@ -62,6 +64,7 @@ exports.sendfriendrequest = function (req, res) {
                     });
                     var tmp = ({
                         friend_id: req.user.user_id,
+                        name: req.user.name,
                         status: 0,
                         message: "hi ban minh co the lam quen khong"
                     });
@@ -76,6 +79,7 @@ exports.sendfriendrequest = function (req, res) {
                     if (!_contain(result.list, req.user.user_id)) {
                         var tmp = ({
                             friend_id: req.user.user_id,
+                            name: req.user.name,
                             status: 0,
                             message: "hi ban minh co the lam quen khong"
                         });
@@ -114,7 +118,7 @@ function _contain(arr, check_friend_id) {
 function find_invitation(arr, check_friend_id) {
 
     for (var i in arr) {
-        if (arr[i].friend_id.equals(check_friend_id))
+        if (arr[i].friend_id == check_friend_id)
             return arr[i].friend_id;
     }
     return null;
@@ -123,7 +127,7 @@ function find_invitation(arr, check_friend_id) {
 
 exports.replyfriendrequest = function (req, res) {
     var friend_id = req.body.friend_id;
-    var status = req.body.status
+    var status = req.body.status;
 
     async.waterfall([
         function (done) {
@@ -131,17 +135,18 @@ exports.replyfriendrequest = function (req, res) {
                 if (err || !result) {
                     console.log("find rq", err);
                     done(err);
-                } else{
-
-                    for (var i in result.list) {
-                        var friend_ids = find_invitation(result.list, req.user.user_id);
-                        console.log( "sssss"+friend_ids);
-                        if (friend_ids) {
-                            result.list[i].status = status;
-                            result.save(function (err) {
-                                console.log(err);
-                                done(err)
-                            });
+                } else {
+                    var friend_ids = find_invitation(result.list, req.user.user_id);
+                    console.log("sssss" + friend_ids);
+                    if (friend_ids) {
+                        for (var i = 0; i < result.list.length; i++) {
+                            if (friend_ids == result.list[i].friend_id) {
+                                result.list[i].status = status;
+                                result.save(function (err) {
+                                    console.log(err);
+                                    done(err)
+                                });
+                            }
                         }
                     }
                     done(null);
@@ -154,15 +159,16 @@ exports.replyfriendrequest = function (req, res) {
                 if (err || !result) {
                     done(err)
                 } else {
-                    for (var i in result.list) {
-                        var friend_ids = find_invitation(result.list, req.body.friend_id);
-                        if (friend_ids) {
-                            console.log( "aaaaaaa"+status+"   "+friend_ids);
-                            result.list[i].status = status;
-                            result.save(function (err) {
-                                done(err)
-                            });
-
+                    var friend_ids = find_invitation(result.list, req.body.friend_id);
+                    if (friend_ids) {
+                        for (var i = 0; i < result.list.length; i++) {
+                            console.log("aaaaaaa" + status + "   " + friend_ids);
+                            if (friend_ids == result.list[i].friend_id) {
+                                result.list[i].status = status;
+                                result.save(function (err) {
+                                    done(err)
+                                });
+                            }
                         }
                     }
 
@@ -180,5 +186,36 @@ exports.replyfriendrequest = function (req, res) {
     });
 
 
+}
+
+exports.getallinvitation = function (req, res) {
+    var user_id = req.user.user_id;
+    var result = [];
+    Yourinvitation.findOne({user_id: user_id}, function (err, acc) {
+        if (err) {
+            respone.res_error(400, "system err", true.res);
+        } else if (!acc) {
+            respone.res_success(200, "success", false, result, res);
+        } else {
+            if (acc.list.length == 0) {
+                respone.res_success(200, "success", false, result, res);
+            } else {
+                for (var i = 0; i < acc.list.length; i++) {
+                    if (acc.list[i].status == 0) {
+                        var tmp = {
+                            user_id: acc.list[i].friend_id,
+                            name: acc.list[i].name,
+                            status: acc.l
+                        }
+                        result.push(tmp);
+                    }
+                }
+
+            }
+            respone.res_success(200, "success", false, result, res);
+        }
+
+
+    })
 
 }

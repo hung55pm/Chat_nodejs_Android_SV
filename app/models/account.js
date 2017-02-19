@@ -17,7 +17,9 @@ var accountSchema = new Schema({
     birthday: Date,
     address: String,
     email: String,
-    access_token: String,
+    sex:String,
+    phonenumber:String,
+    access_token: String
 
 });
 

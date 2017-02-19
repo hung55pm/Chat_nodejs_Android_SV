@@ -10,6 +10,6 @@ var yourinvitation = new Schema({
         required: true,
         unique: true
     },
-    list: [{friend_id:String, status: Number, message: String}]
+    list: [{friend_id:String, status: Number, message: String, name:String }]
 });
 module.exports = mongoose.model('Yourinvitation', yourinvitation);
