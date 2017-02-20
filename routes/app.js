@@ -35,4 +35,5 @@ router.post('/add-friend',isValidToken,Friend.sendfriendrequest);
 router.post('/friend-reply',isValidToken,Friend.replyfriendrequest);
 router.post('/search-friend',isValidToken,Acount.searchfriend);
 router.post('/getall-invitaion',isValidToken, Friend.getallinvitation);
+router.post('/getall-friend',isValidToken, Friend.getallfriends);
 module.exports = router;

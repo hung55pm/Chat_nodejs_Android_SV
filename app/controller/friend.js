@@ -128,9 +128,64 @@ function find_invitation(arr, check_friend_id) {
 exports.replyfriendrequest = function (req, res) {
     var friend_id = req.body.friend_id;
     var status = req.body.status;
-
+    console.log("data"+req.body.friend_id+"  "+req.body.name+"  "+req.body.status);
     async.waterfall([
         function (done) {
+            //update status friend for user_id
+            Friend.findOne({user_id: req.user.user_id}, function (err, result) {
+                if (err ) {
+                    console.log("find rq", err);
+                    done(err);
+                } if(!result){
+                    var newfriendrq = Friend({
+                        user_id: req.user.user_id,
+                    });
+                    var tmp = ({
+                        friend_id: friend_id,
+                        name: req.body.name,
+                        status: status,
+                    });
+                    newfriendrq.list.push(tmp);
+                    console.log("aaa", JSON.stringify(newfriendrq));
+                    newfriendrq.save(function (err) {
+                        console.log("save rq0", err);
+                        done(err);
+
+                    });
+                    done(null);
+                }else {
+                    var friend_ids = find_invitation(result.list, req.body.friend_id);
+                    console.log("sssss" + friend_ids);
+                    if (friend_ids) {
+                        for (var i = 0; i < result.list.length; i++) {
+                            if (friend_ids == result.list[i].friend_id) {
+                                result.list[i].status = status;
+                                result.save(function (err) {
+                                    console.log(err);
+                                    done(err)
+                                });
+                            }
+                        }
+                    }else {
+                        var tmp = ({
+                            friend_id: friend_id,
+                            name: req.body.name,
+                            status: status,
+                        });
+                        result.list.push(tmp);
+                        console.log("aaa", JSON.stringify(newfriendrq));
+                        result.save(function (err) {
+                            console.log("save rq0", err);
+                            done(err);
+
+                        });
+                    }
+                    done(null);
+                }
+
+            });
+        }, function (done) {
+            //update status friend for friend_id
             Friend.findOne({user_id: friend_id}, function (err, result) {
                 if (err || !result) {
                     console.log("find rq", err);
@@ -153,7 +208,7 @@ exports.replyfriendrequest = function (req, res) {
                 }
 
             });
-        }, function (done) {
+        },function (done) {
 
             Yourinvitation.findOne({user_id: req.user.user_id}, function (err, result) {
                 if (err || !result) {
@@ -189,9 +244,43 @@ exports.replyfriendrequest = function (req, res) {
 }
 
 exports.getallinvitation = function (req, res) {
+    console.log("sssss"+req.user.user_id);
     var user_id = req.user.user_id;
     var result = [];
-    Yourinvitation.findOne({user_id: user_id}, function (err, acc) {
+        Yourinvitation.findOne({user_id: user_id}, function (err, acc) {
+            if (err) {
+                respone.res_error(400, "system err", true.res);
+            } else if (!acc) {
+                respone.res_success(200, "success", false, result, res);
+            } else {
+                if (acc.list.length == 0) {
+                    respone.res_success(200, "success", false, result, res);
+                } else {
+                    for (var i = 0; i < acc.list.length; i++) {
+                        if (acc.list[i].status == 0) {
+                            var tmp = {
+                                user_id: acc.list[i].friend_id,
+                                name: acc.list[i].name,
+                            }
+                            result.push(tmp);
+                        }
+                    }
+
+                }
+                respone.res_success(200, "success", false, result, res);
+            }
+
+
+        });
+
+
+
+}
+
+exports.getallfriends=function (req,res) {
+    var user_id = req.user.user_id;
+    var result = [];
+    Friend.findOne({user_id: user_id}, function (err, acc) {
         if (err) {
             respone.res_error(400, "system err", true.res);
         } else if (!acc) {
@@ -201,11 +290,10 @@ exports.getallinvitation = function (req, res) {
                 respone.res_success(200, "success", false, result, res);
             } else {
                 for (var i = 0; i < acc.list.length; i++) {
-                    if (acc.list[i].status == 0) {
+                    if (acc.list[i].status == 1) {
                         var tmp = {
                             user_id: acc.list[i].friend_id,
                             name: acc.list[i].name,
-                            status: acc.l
                         }
                         result.push(tmp);
                     }
@@ -216,6 +304,6 @@ exports.getallinvitation = function (req, res) {
         }
 
 
-    })
+    });
 
 }
