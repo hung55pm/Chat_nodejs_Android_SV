@@ -31,7 +31,8 @@ exports.login = function (req, res) {
             respone.res_error(500, 'The password is invalid', true, res);
         } else {
             var tmp = ({
-                access_token: acc.access_token
+                access_token: acc.access_token,
+                user_id:acc.user_id
             });
             respone.res_success(200, 'success', false, tmp, res);
 
