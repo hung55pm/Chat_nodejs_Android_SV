@@ -32,7 +32,8 @@ exports.login = function (req, res) {
         } else {
             var tmp = ({
                 access_token: acc.access_token,
-                user_id:acc.user_id
+                user_id:acc.user_id,
+                name:acc.name
             });
             respone.res_success(200, 'success', false, tmp, res);
 

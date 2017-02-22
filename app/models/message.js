@@ -11,6 +11,6 @@ var messageSchema = new Schema({
         required: true,
         unique: true
     },
-    list: [{name: String,message:String, date: Date}]
+    list: [{user_id:String, name: String, message:String, date: Date}]
 });
 module.exports = mongoose.model('Message', messageSchema);

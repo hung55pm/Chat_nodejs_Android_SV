@@ -56,11 +56,29 @@ exports.socketlisten = function (req, res) {
 
         });
 
+
+        socket.on("chat1vs1",function (msg) {
+            var tmp= JSON.parse(msg);
+            console.log(tmp);
+            Message.findOne({room_id:tmp.room_id},function (err,result) {
+                if(err){
+
+                }else  if(!result){
+
+                }else {
+
+                }
+
+            });
+
+        })
+
         socket.on('disconnect', function () {
             console.log('user disconnected');
         });
     });
 }
+
 
 
 
