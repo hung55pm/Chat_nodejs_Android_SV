@@ -62,11 +62,46 @@ exports.socketlisten = function (req, res) {
             console.log(tmp);
             Message.findOne({room_id:tmp.room_id},function (err,result) {
                 if(err){
+                    var json={
+                        code:400,
+                        message:"fail"
 
+                    }
+                    io.emit(tmp.room_id,json );
                 }else  if(!result){
+                    var mess= new Message({
+                        room_id: tmp.room_id,
+                        list:[]
+                    })
 
+                    mess.save(function (err) {
+                        console.log("save err: "+err)
+                    })
+                    var json={
+                        code:200,
+                        message:"success",
+                        result:{}
+
+                    }
+                    io.emit(tmp.room_id, json);
                 }else {
+                    var detail={
+                        user_id:tmp.user_id,
+                        name:tmp.name,
+                        message: tmp.message,
+                        date: tmp.create_date
+                    }
+                    result.list.push(detail);
+                    result.save(function (err) {
+                        
+                    })
+                    var json={
+                        code:200,
+                        message:"success",
+                        result:detail
 
+                    }
+                    io.emit(tmp.room_id, json);
                 }
 
             });
