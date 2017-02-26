@@ -36,4 +36,6 @@ router.post('/friend-reply',isValidToken,Friend.replyfriendrequest);
 router.post('/search-friend',isValidToken,Acount.searchfriend);
 router.post('/getall-invitaion',isValidToken, Friend.getallinvitation);
 router.post('/getall-friend',isValidToken, Friend.getallfriends);
+router.post('/get-mesrecent',isValidToken, Friend.getMessageRecent);
+router.post('/get-mes-detail',isValidToken, Message.getmessagedetail);
 module.exports = router;

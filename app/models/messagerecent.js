@@ -10,6 +10,6 @@ var mesRecentSchema = new Schema({
         required: true,
         unique: true
     },
-    list: [{room_id:String,person_id:String, name: String, message:String, date: Date}]
+    list: [{room_id:String,friend_name:String,sender_id:String, sender_name: String, message:String, date: Date}]
 });
 module.exports = mongoose.model('MessageRecent', mesRecentSchema);

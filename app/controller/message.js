@@ -7,6 +7,8 @@ var async = require('async');
 var io = require('socket.io')(http.httplistens());
 var Message = require('../models/message');
 var MesRecent = require('../models/messagerecent');
+var Acount = require('../models/account');
+var respon= require('../helppers/respones');
 exports.socketlisten = function (req, res) {
     io.on('connection', function (socket) {
         console.log('a user connected ');
@@ -39,7 +41,7 @@ exports.socketlisten = function (req, res) {
                     var json = {
                         code: 200,
                         message: "success",
-                        result: mess
+                        room_id: tmp[0] + "-" + tmp[1]
 
                     }
                     io.emit(tmp[0], json);
@@ -47,7 +49,7 @@ exports.socketlisten = function (req, res) {
                     var json = {
                         code: 200,
                         message: "success",
-                        result: mes
+                        room_id: mes.room_id
 
                     }
                     io.emit(tmp[0], json);
@@ -107,109 +109,166 @@ exports.socketlisten = function (req, res) {
 
                 });
             }, function (done) {
-                MesRecent.find({
-                    $or: [{
-                        user_id: getid[0],
-                        user_id: getid[1]
-                    }]
-                }).exec(function (err, result) {
-                    if (err) {
+                var friend_name0,friend_name1;
+                async.parallel([function (callback) {
+                    Acount.findOne({user_id : getid[1]},function (err, acc) {
+                        console.log("vvvvv"+acc);
+                        if(err || !acc){
+                            friend_name0="admin"
+                            return callback(null);
+                        }else {
+                            friend_name0=acc.name;
+                            return callback(null);
+                        }
+
+                    });
+
+                },function (callback) {
+                    Acount.findOne({user_id : getid[0]},function (err, acc) {
+                        console.log("vvvvv"+acc);
+                        if(err || !acc){
+                            friend_name1="admin"
+                            return callback(null);
+                        }else {
+                            friend_name1=acc.name;
+                            return callback(null);
+                        }
+
+                    });
+                },function (callback) {
+                    MesRecent.find({
+                        $or: [{
+                            user_id: getid[0]},
+                            { user_id: getid[1]
+                            }]
+                    }).exec(function (err, result) {
+
+                        if (err) {
+                            callback(err);
+                        } else if (!result) {
+                            var setid0 = new MesRecent({
+                                user_id: getid[0],
+                            });
+                            var setid1 = new MesRecent({
+                                user_id: getid[1],
+                            });
+
+                            var list0 = {
+                                room_id: tmp.room_id,
+                                friend_name: friend_name0,
+                                sender_id: tmp.user_id,
+                                sender_name: tmp.name,
+                                message: tmp.message,
+                                date: tmp.create_date
+                            }
+                            var list1 = {
+                                room_id: tmp.room_id,
+                                friend_name: friend_name1,
+                                sender_id: tmp.user_id,
+                                sender_name: tmp.name,
+                                message: tmp.message,
+                                date: tmp.create_date
+                            }
+                            setid0.list.push(list0);
+                            setid1.list.push(list1);
+                            setid0.save();
+                            setid1.save();
+                            callback(null);
+
+                        } else {
+                            var check0 = _contain(result, getid[0]);
+                            var item0= _containposition(result, getid[0]);
+                            var check1 = _contain(result, getid[1]);
+                            var item1= _containposition(result, getid[1]);
+                            if (check0) {
+                                var recent0 = _containrecent(check0.list, tmp.room_id);
+                                var clist000 = {
+                                    room_id: tmp.room_id,
+                                    friend_name: friend_name0,
+                                    sender_id: tmp.user_id,
+                                    sender_name: tmp.name,
+                                    message: tmp.message,
+                                    date: tmp.create_date
+                                }
+                                if (recent0) {
+                                    // update new message to message recent
+                                    var position = _containitem(check0.list, tmp.room_id);
+                                    if (position) {
+                                        result[item0].list[position]=clist000;
+                                        result[item0].save();
+                                    }
+
+                                } else {
+                                    result[item0].list.push(clist000);
+                                    result[item0].save();
+                                }
+                            } else {
+                                var setid00 = new MesRecent({
+                                    user_id: getid[0],
+                                });
+                                var clist0 = {
+                                    room_id: tmp.room_id,
+                                    friend_name: friend_name0,
+                                    sender_id: tmp.user_id,
+                                    sender_name: tmp.name,
+                                    message: tmp.message,
+                                    date: tmp.create_date
+                                }
+                                setid00.list.push(clist0);
+                                setid00.save();
+                            }
+                            if (check1) {
+                                var recent1 = _containrecent(check1.list, tmp.room_id);
+                                var clist100 = {
+                                    room_id: tmp.room_id,
+                                    friend_name: friend_name1,
+                                    sender_id: tmp.user_id,
+                                    sender_name: tmp.name,
+                                    message: tmp.message,
+                                    date: tmp.create_date
+                                }
+                                if (recent1) {
+                                    var position = _containitem(check1.list, tmp.room_id);
+                                    if (position) {
+                                        result[item1].list[position]=clist100;
+                                        result[item1].save();
+                                    }
+                                    // update new message to message recent
+                                } else {
+                                    result[item1].list.push(clist100);
+                                    result[item1].save();
+                                }
+                            } else {
+                                var setid01 = new MesRecent({
+                                    user_id: getid[1],
+                                });
+                                var clist1 = {
+                                    room_id: tmp.room_id,
+                                    friend_name: friend_name1,
+                                    sender_id: tmp.user_id,
+                                    sender_name: tmp.name,
+                                    message: tmp.message,
+                                    date: tmp.create_date
+                                }
+                                setid01.list.push(clist1);
+                                setid01.save();
+                            }
+                            callback(null);
+                        }
+                    })
+                }],function (err) {
+                    if(err){
                         done(err);
-                    } else if (!result) {
-                        var setid0 = new MesRecent({
-                            user_id: getid[0]
-                        });
-                        var setid1 = new MesRecent({
-                            user_id: getid[1]
-                        });
-                        var list0 = {
-                            room_id: tmp.room_id,
-                            person_id: tmp.user_id,
-                            name: tmp.name,
-                            message: tmp.message,
-                            date: tmp.create_date
-                        }
-                        var list1 = {
-                            room_id: tmp.room_id,
-                            person_id: tmp.user_id,
-                            name: tmp.name,
-                            message: tmp.message,
-                            date: tmp.create_date
-                        }
-                        setid0.list.push(list0);
-                        setid1.list.push(list1);
-                        setid0.save();
-                        setid1.save();
-                        done(null);
-
-                    } else {
-                        var check0=_contain(result,getid[0]);
-                        var check1=_contain(result,getid[1]);
-                        if(check0){
-                            var recent0= _containrecent(check0.list,tmp.room_id);
-                            var clist0 = {
-                                room_id: tmp.room_id,
-                                person_id: tmp.user_id,
-                                name: tmp.name,
-                                message: tmp.message,
-                                date: tmp.create_date
-                            }
-                            if(recent0){
-                                // update new message to message recent
-
-                            }else {
-
-                            check0.list.push(clist0);
-                            check0.save();
-                            }
-                        }else {
-                            var setid00 = new MesRecent({
-                                user_id: getid[0]
-                            });
-                            var clist0 = {
-                                room_id: tmp.room_id,
-                                person_id: tmp.user_id,
-                                name: tmp.name,
-                                message: tmp.message,
-                                date: tmp.create_date
-                            }
-                            setid00.list.push(clist0);
-                            setid00.save();
-                        }
-                        if(check1){
-                            var recent1= _containrecent(check1.list,tmp.room_id);
-                            var clist1 = {
-                                room_id: tmp.room_id,
-                                person_id: tmp.user_id,
-                                name: tmp.name,
-                                message: tmp.message,
-                                date: tmp.create_date
-                            }
-                            if(recent1){
-                                // update new message to message recent
-                            }else {
-                                check1.list.push(clist1);
-                                check1.save();
-                            }
-                        }else {
-                            var setid01 = new MesRecent({
-                                user_id: getid[1]
-                            });
-                            var clist1 = {
-                                room_id: tmp.room_id,
-                                person_id: tmp.user_id,
-                                name: tmp.name,
-                                message: tmp.message,
-                                date: tmp.create_date
-                            }
-                            setid01.list.push(clist1);
-                            setid01.save();
-                        }
+                    }else {
                         done(null);
                     }
+
                 })
+
+
+
             }], function (err) {
-                if(err){
+                if (err) {
                     var json = {
                         code: 400,
                         message: "fail"
@@ -236,6 +295,14 @@ function _contain(arr, check_friend_id) {
     }
     return false;
 }
+function _containposition(arr, check_friend_id) {
+
+    for (var i in arr) {
+        if (arr[i].user_id == check_friend_id)
+            return i;
+    }
+    return false;
+}
 function _containrecent(arr, check_id) {
 
     for (var i in arr) {
@@ -244,6 +311,27 @@ function _containrecent(arr, check_id) {
     }
     return false;
 }
+function _containitem(arr, check_id) {
+
+    for (var i in arr) {
+        if (arr[i].room_id == check_id)
+            return i;
+    }
+    return false;
+}
+
+
+exports.getmessagedetail= function (req,res) {
+    var listmes=[];
+    Message.findOne({room_id:req.body.room_id},function (err, mes) {
+        if(err || !mes){
+            respon.res_error(400,"system err",true,res);
+        }else {
+            respon.res_success(200,"success",false,mes.list,res);
+        }
+    })
+}
+
 
 
 

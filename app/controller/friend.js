@@ -4,6 +4,7 @@
 
 var Yourinvitation = require('../models/yourinvitation');
 var Friend = require('../models/friend');
+var MesRecent = require('../models/messagerecent');
 var respone = require('../helppers/respones');
 var async = require('async');
 exports.sendfriendrequest = function (req, res) {
@@ -301,6 +302,25 @@ exports.getallfriends=function (req,res) {
 
             }
             respone.res_success(200, "success", false, result, res);
+        }
+
+
+    });
+
+}
+
+exports.getMessageRecent=function (req,res) {
+    var user_id= req.user.user_id;
+    MesRecent.findOne({user_id: user_id},function (err ,result) {
+        if(err){
+            respone.res_error(400,"system err",true,res);
+        }else{
+            if (!result){
+                respone.res_success(200,"success",false,[],res);
+
+            }else {
+                respone.res_success(200,"success",false,result.list,res);
+            }
         }
 
 
