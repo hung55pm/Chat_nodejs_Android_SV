@@ -136,6 +136,8 @@ exports.socketlisten = function (req, res) {
 
                     });
                 },function (callback) {
+
+                    console.log("aaa"+friend_name1+"  "+friend_name0);
                     MesRecent.find({
                         $or: [{
                             user_id: getid[0]},
