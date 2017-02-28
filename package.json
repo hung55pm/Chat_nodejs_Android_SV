@@ -31,7 +31,8 @@
     "smtp-connection": "^2.11.0",
     "socket.io" : "*",
     "socketio-file-upload": "^0.4.4",
-    "mongoose":"*"
+    "mongoose":"*",
+    "firebase-admin":"*"
 
   }
 }
