@@ -23,7 +23,7 @@ var defaultDatabase = defaultApp.database();
 // ... or use the equivalent shorthand notation
 defaultAuth = admin.auth();
 defaultDatabase = admin.database();
-    var registrationToken = "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...";
+    var registrationToken = "evIXMiQA3SU:APA91bHRkz4qMdizej1EAbcKQhIKc3MEIryqObpaOX43Jl84geBIo5oIwJE4NHn7DW3JrPypiSud1Vbih0ci31n3HmQck5aSLYHtdoBAvyxtKw-E6McpEdPmLZYgL0M-PLHpvF9uo7l_";
 
 // See the "Defining the message payload" section above for details
 // on how to define a message payload.
