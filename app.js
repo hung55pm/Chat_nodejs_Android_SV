@@ -17,11 +17,6 @@ message.socketlisten();
 mongoose.Promise = global.Promise;
 init();
 var app = express();
-
-var admin=require('./configs/filebase_admin');
-admin.fcm_admin();
-
-
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 

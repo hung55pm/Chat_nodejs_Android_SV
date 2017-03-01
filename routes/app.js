@@ -22,9 +22,21 @@ function isValidToken(req, res, next) {
         if (err || !acc) {
             respone.res_error(400,'invalid access token',true,res);
         } else {
-            //console.log(acc);
             req.user = acc;
             return next();
+        }
+    });
+}
+function checkValidToken(req, res, next) {
+    var accessToken = getAccessToken(req);
+    //console.log(accessToken)
+    mAcount.findOne({
+        access_token: accessToken
+    }, function (err, acc) {
+        if (err || !acc) {
+            respone.res_error(400,'invalid access token',true,res);
+        } else {
+            respone.res_successnoresult(200,'success',false,res);
         }
     });
 }
@@ -38,4 +50,5 @@ router.post('/getall-invitaion',isValidToken, Friend.getallinvitation);
 router.post('/getall-friend',isValidToken, Friend.getallfriends);
 router.post('/get-mesrecent',isValidToken, Friend.getMessageRecent);
 router.post('/get-mes-detail',isValidToken, Message.getmessagedetail);
+router.post('/request',checkValidToken);
 module.exports = router;

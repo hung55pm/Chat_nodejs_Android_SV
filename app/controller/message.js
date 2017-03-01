@@ -9,6 +9,7 @@ var Message = require('../models/message');
 var MesRecent = require('../models/messagerecent');
 var Acount = require('../models/account');
 var respon= require('../helppers/respones');
+var fcm=require('../../configs/filebase_admin');
 exports.socketlisten = function (req, res) {
     io.on('connection', function (socket) {
         console.log('a user connected ');
@@ -110,16 +111,20 @@ exports.socketlisten = function (req, res) {
                 });
             }, function (done) {
                 var friend_name0,friend_name1;
+                var token0=[],token1=[];
                 async.parallel([function (callback) {
                     Acount.findOne({user_id : getid[1]},function (err, acc) {
                         console.log("vvvvv"+acc);
                         if(err || !acc){
-                            friend_name0="admin"
+                            friend_name0="admin";
+                            token0=[];
                             return callback(null);
                         }else {
                             friend_name0=acc.name;
+                            token0=acc.noitification_list;
                             return callback(null);
                         }
+
 
                     });
 
@@ -127,13 +132,35 @@ exports.socketlisten = function (req, res) {
                     Acount.findOne({user_id : getid[0]},function (err, acc) {
                         console.log("vvvvv"+acc);
                         if(err || !acc){
-                            friend_name1="admin"
-                            return callback(null);
+                            friend_name1="admin";
+                            token1=[];
                         }else {
                             friend_name1=acc.name;
-                            return callback(null);
+                            token1=acc.noitification_list;
+
+                        }
+                        var detail = {
+                            user_id: tmp.user_id,
+                            name: tmp.name,
+                            message: tmp.message,
+                            date: tmp.create_date
                         }
 
+                        if(tmp.user_id==getid[0]){
+                            if(token0.length>0){
+                                for (var i=0;i<token0.length;i++){
+                                    fcm.push_noitification_single(detail.toString(),"tin nhan moi",token0[i].fcm_token);
+                                }
+                            }
+                        }else if(tmp.user_id==getid[1]) {
+                            if(token1.length>0){
+                                for (var i=0;i<token1.length;i++){
+                                    fcm.push_noitification_single(detail.toString(),"tin nhan moi",token1[i].fcm_token);
+                                }
+                            }
+                        }
+
+                        return callback(null);
                     });
                 },function (callback) {
 

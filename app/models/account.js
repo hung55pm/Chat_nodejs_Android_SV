@@ -19,7 +19,8 @@ var accountSchema = new Schema({
     email: String,
     sex:String,
     phonenumber:String,
-    access_token: String
+    access_token: String,
+    noitification_list:[{fcm_token:String}]
 
 });
 

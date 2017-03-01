@@ -30,6 +30,11 @@ exports.login = function (req, res) {
         else if (!acc.validPassword(req.body.password)) {
             respone.res_error(500, 'The password is invalid', true, res);
         } else {
+            var token={
+                fcm_token:req.body.fcm_token
+            }
+            acc.noitification_list.push(token);
+            acc.save();
             var tmp = ({
                 access_token: acc.access_token,
                 user_id:acc.user_id,
@@ -120,6 +125,8 @@ function getAccessToken(req) {
     return req.get('Authorization').substring(13);
 }
 exports.logout = function (req, res) {
+    console.log("token"+req.body.fcm_token);
+    var token=req.body.fcm_token;
     var accessToken = getAccessToken(req);
     console.log("aaaaa" + accessToken);
     Account.findOneAndUpdate({
@@ -129,8 +136,19 @@ exports.logout = function (req, res) {
     }, function (err, acc) {
         if (err || !acc) {
             respone.res_error(400, "logout fail", true, res);
+        }else {
+            console.log("ffffff   "+token);
+           for(var i=0;i<acc.noitification_list.length;i++){
+               if(acc.noitification_list[i].fcm_token==token){
+                   console.log("sssss   "+token);
+                   acc.noitification_list.splice(i,1);
+                   acc.save();
+               }
+           }
+
+            respone.res_success(200, "logout success", false, "", res);
         }
-        respone.res_success(200, "logout success", false, "", res);
+
     });
 
 
@@ -198,7 +216,7 @@ function _contain(arr, check_friend_id) {
 
     for (var i in arr) {
         if (arr[i].friend_id == check_friend_id)
-            return true;
+            return i;
     }
     return false;
 }
