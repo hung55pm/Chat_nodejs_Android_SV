@@ -19,28 +19,34 @@ console.log(defaultApp.name);  // "[DEFAULT]"
 // Retrieve services via the defaultApp variable...
 var defaultAuth = defaultApp.auth();
 var defaultDatabase = defaultApp.database();
-var message ={
-    to : "",
-    collapse_key : "",
-    data : {
-        key1 : "key1",
-        key2 : "key2"
-    },
-    notification : {
-        title : 'Title of the notification',
-        body : 'Body of the notification'
-    }
-};
+
 // ... or use the equivalent shorthand notation
 defaultAuth = admin.auth();
 defaultDatabase = admin.database();
+    var registrationToken = "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...";
 
-defaultApp.send(message,function (err, result) {
-    if(err){
+// See the "Defining the message payload" section above for details
+// on how to define a message payload.
+    var payload = {
+        notification: {
+            title: "Urgent action needed!",
+            body: "Urgent action is needed to prevent your account from being disabled!"
+        }
+    };
 
-    }else {
+// Set the message as high priority and have it expire after 24 hours.
+    var options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
 
-    }
-
-})
+// Send a message to the device corresponding to the provided
+// registration token with the provided options.
+    admin.messaging().sendToDevice(registrationToken, payload, options)
+        .then(function(response) {
+            console.log("Successfully sent message:", response);
+        })
+        .catch(function(error) {
+            console.log("Error sending message:", error);
+        });
 }
