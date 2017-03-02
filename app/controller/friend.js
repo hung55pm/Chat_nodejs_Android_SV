@@ -4,10 +4,13 @@
 
 var Yourinvitation = require('../models/yourinvitation');
 var Friend = require('../models/friend');
+var Acount = require('../models/account');
 var MesRecent = require('../models/messagerecent');
 var respone = require('../helppers/respones');
 var async = require('async');
+var fcm=require('../../configs/filebase_admin');
 exports.sendfriendrequest = function (req, res) {
+    var invitation;
     console.log(req.body.friend_id + "   " + req.user.user_id);
     var friend_id = req.body.friend_id;
     async.waterfall([
@@ -63,12 +66,14 @@ exports.sendfriendrequest = function (req, res) {
                     var newfriendrq = Yourinvitation({
                         user_id: friend_id,
                     });
+
                     var tmp = ({
                         friend_id: req.user.user_id,
                         name: req.user.name,
                         status: 0,
                         message: "hi ban minh co the lam quen khong"
                     });
+                    invitation=tmp;
                     newfriendrq.list.push(tmp);
                     newfriendrq.save(function (err) {
                         console.log("save y1", err);
@@ -84,6 +89,7 @@ exports.sendfriendrequest = function (req, res) {
                             status: 0,
                             message: "hi ban minh co the lam quen khong"
                         });
+                        invitation=tmp;
                         result.list.push(tmp);
                         result.save(function (err) {
                             console.log("save y2", err);
@@ -96,6 +102,26 @@ exports.sendfriendrequest = function (req, res) {
                 }
 
             });
+        },function (done) {
+            done(null);
+            // Acount.findOne({user_id:friend_id},function (err, acc) {
+            //     if(err ||!acc){
+            //         done(null);
+            //     }else {
+            //         if(acc.noitification_list.length>0){
+            //             var iteminvi={
+            //                 friend_id: req.user.user_id,
+            //                 name: req.user.name,
+            //                 status: 0,
+            //                 message: "hi ban minh co the lam quen khong"
+            //             }
+            //             for(var i=0;i<acc.noitification_list.length;i++){
+            //                 fcm.push_noitification_single(JSON.stringify(iteminvi),"inviation",acc.noitification_list[i].fcm_token);
+            //             }
+            //         }
+            //         done(null);
+            //     }
+            // });
         }
     ], function (err) {
         console.log(err)

@@ -140,6 +140,7 @@ exports.socketlisten = function (req, res) {
 
                         }
                         var detail = {
+                            room_id: tmp.room_id,
                             user_id: tmp.user_id,
                             name: tmp.name,
                             message: tmp.message,
@@ -149,13 +150,13 @@ exports.socketlisten = function (req, res) {
                         if(tmp.user_id==getid[0]){
                             if(token0.length>0){
                                 for (var i=0;i<token0.length;i++){
-                                    fcm.push_noitification_single(detail.toString(),"tin nhan moi",token0[i].fcm_token);
+                                    fcm.push_noitification_single(JSON.stringify(detail),"new message",token0[i].fcm_token);
                                 }
                             }
                         }else if(tmp.user_id==getid[1]) {
                             if(token1.length>0){
                                 for (var i=0;i<token1.length;i++){
-                                    fcm.push_noitification_single(detail.toString(),"tin nhan moi",token1[i].fcm_token);
+                                    fcm.push_noitification_single(JSON.stringify(detail),"new message",token1[i].fcm_token);
                                 }
                             }
                         }
@@ -223,7 +224,18 @@ exports.socketlisten = function (req, res) {
                                     // update new message to message recent
                                     var position = _containitem(check0.list, tmp.room_id);
                                     if (position) {
-                                        result[item0].list[position]=clist000;
+                                        if(result[item0].list[position].friend_name==undefined){
+                                            result[item0].list[position].sender_name=friend_name0;
+                                            result[item0].list[position].sender_name=tmp.name;
+                                            result[item0].list[position].sender_id=tmp.user_id;
+                                            result[item0].list[position].message=tmp.message;
+                                            result[item0].list[position].date=tmp.create_date;
+                                        }else {
+                                            result[item0].list[position].sender_name=tmp.name;
+                                            result[item0].list[position].sender_id=tmp.user_id;
+                                            result[item0].list[position].message=tmp.message;
+                                            result[item0].list[position].date=tmp.create_date;
+                                        }
                                         result[item0].save();
                                     }
 
@@ -259,7 +271,19 @@ exports.socketlisten = function (req, res) {
                                 if (recent1) {
                                     var position = _containitem(check1.list, tmp.room_id);
                                     if (position) {
-                                        result[item1].list[position]=clist100;
+
+                                        if(result[item1].list[position].friend_name==undefined){
+                                            result[item1].list[position].sender_name=friend_name0;
+                                            result[item1].list[position].sender_name=tmp.name;
+                                            result[item1].list[position].sender_id=tmp.user_id;
+                                            result[item1].list[position].message=tmp.message;
+                                            result[item1].list[position].date=tmp.create_date;
+                                        }else {
+                                            result[item1].list[position].sender_name=tmp.name;
+                                            result[item1].list[position].sender_id=tmp.user_id;
+                                            result[item1].list[position].message=tmp.message;
+                                            result[item1].list[position].date=tmp.create_date;
+                                        }
                                         result[item1].save();
                                     }
                                     // update new message to message recent
