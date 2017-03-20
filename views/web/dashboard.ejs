@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=1"/>
+    <title>ZooChat</title>
+    <link rel="stylesheet" href="/assets/lobibox/lobibox.css">
+    <link rel="stylesheet" type="text/css" href="assets/bootstrap/dist/css/bootstrap.min.css"/>
+    <link href="/assets/fontawesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/assets/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/plugins/interface/datatables.min.js"></script>
+    <script type="text/javascript" src="/js/menujs.js"></script>
+    <script type="text/javascript" src="/js/home.js"></script>
+
+    <script src="/assets/lobibox/lobibox.min.js"></script>
+    <script src="assets/bootstrap/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+<%- include ../menu/menuheader.ejs %>
+<div class="container">
+    <div id="zoo_home">
+        <%- include ../web/home.ejs %>
+    </div>
+    <div id="zoo_friend">
+        <h3>Friend</h3>
+    </div>
+    <div id="zoo_invitation">
+        <h3>Invitation</h3>
+    </div>
+
+</div>
+</body>
+</html>

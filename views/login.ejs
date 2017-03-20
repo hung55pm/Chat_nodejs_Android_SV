@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=1"/>
+    <title>Login</title>
+
+    <link href="http://fonts.googleapis.com/css?family=Lato:100italic,100,300italic,300,400italic,400,700italic,700,900italic,900"
+          rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="assets/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style-login.css"/>
+    <script type="text/javascript" src="/assets/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/jquery/dist/jquery-ui.min.js"></script>
+    <script src="assets/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<section class="container login-form">
+    <section>
+        <form method="POST" action="/login" id="login">
+            <img src="img/logo.png" alt="" class="img-responsive"/>
+
+            <div class="form-group">
+                <input name="user_id" required class="form-control" placeholder="Enter number phone"/>
+                <span class="glyphicon glyphicon-user"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" required class="form-control" placeholder="Enter password"/>
+                <span class="glyphicon glyphicon-lock"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Login Now</button>
+            <a href="/forgot" style="color: blue;font-size: 15px;font-family: 'Courier New', Monospace">Quên mật khẩu</a>
+
+            <% if(message){ %>
+                <div style="color: red;font-size: 15px;font-family: 'Courier New', Monospace"><%= message %></div>
+            <% } %>
+        </form>
+    </section>
+</section>
+</body>
+</html>

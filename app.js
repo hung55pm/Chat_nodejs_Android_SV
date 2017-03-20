@@ -12,13 +12,15 @@ var mongoose = require('mongoose');
 var init = require('./app/helppers/initlazied');
 var index = require('./routes/index');
 var apis = require('./routes/app');
+var flash = require('connect-flash');
+var passport = require('passport');
 var message=require('./app/controller/message');
 message.socketlisten();
 mongoose.Promise = global.Promise;
 init();
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -32,7 +34,11 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-app.use('/', index);
+require('./app/passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+require('./routes/index')(app, passport);
 app.use('/api', apis);
 
 // catch 404 and forward to error handler
@@ -46,7 +52,7 @@ if (app.get('env') === 'development') {
         res.status(err.status || 500);
         res.render('error', {
             message: "Not found",
-            error: {}
+            error: err
         });
     });
 }

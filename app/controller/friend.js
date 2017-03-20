@@ -103,25 +103,26 @@ exports.sendfriendrequest = function (req, res) {
 
             });
         },function (done) {
-            done(null);
-            // Acount.findOne({user_id:friend_id},function (err, acc) {
-            //     if(err ||!acc){
-            //         done(null);
-            //     }else {
-            //         if(acc.noitification_list.length>0){
-            //             var iteminvi={
-            //                 friend_id: req.user.user_id,
-            //                 name: req.user.name,
-            //                 status: 0,
-            //                 message: "hi ban minh co the lam quen khong"
-            //             }
-            //             for(var i=0;i<acc.noitification_list.length;i++){
-            //                 fcm.push_noitification_single(JSON.stringify(iteminvi),"inviation",acc.noitification_list[i].fcm_token);
-            //             }
-            //         }
-            //         done(null);
-            //     }
-            // });
+          //  done(null);
+            Acount.findOne({user_id:friend_id},function (err, acc) {
+                if(err ||!acc){
+                    done(null);
+                }else {
+                    if(acc.noitification_list.length>0){
+                        var iteminvi={
+                            friend_id: req.user.user_id,
+                            name: req.user.name,
+                            status: 0,
+                            message: "hi ban minh co the lam quen khong"
+                        }
+                        console.log("length :"+acc.noitification_list.length);
+                        for(var i=0;i<acc.noitification_list.length;i++){
+                            fcm.push_noitification_single(JSON.stringify(iteminvi),"inviation",acc.noitification_list[i].fcm_token);
+                        }
+                    }
+                    done(null);
+                }
+            });
         }
     ], function (err) {
         console.log(err)
@@ -337,6 +338,7 @@ exports.getallfriends=function (req,res) {
 
 exports.getMessageRecent=function (req,res) {
     var user_id= req.user.user_id;
+
     MesRecent.findOne({user_id: user_id},function (err ,result) {
         if(err){
             respone.res_error(400,"system err",true,res);
@@ -345,7 +347,9 @@ exports.getMessageRecent=function (req,res) {
                 respone.res_success(200,"success",false,[],res);
 
             }else {
+
                 respone.res_success(200,"success",false,result.list,res);
+                console.log("kkkkkkk"+result.list);
             }
         }
 
